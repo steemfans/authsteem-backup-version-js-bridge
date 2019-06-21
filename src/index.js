@@ -93,7 +93,7 @@ server.route({
         if (result.length > 0) {
           return {
             status: true,
-            msg: 'login_success',
+            msg: res,
           };
         }
         return {
