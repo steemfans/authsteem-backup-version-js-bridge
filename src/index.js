@@ -16,6 +16,32 @@ const getAccounts = function(accounts) {
   });
 }
 
+// params = {signingKey, username, authorizedUsername, role, weight}
+const addAccountAuth = function(params) {
+  return new Promise((resolve, reject) => {
+    steem.broadcast.addAccountAuth(params, (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(res);
+      }
+    });
+  });
+}
+
+// params = {signingKey, username, authorizedUsername, role, weight}
+const removeAccountAuth = function(params) {
+  return new Promise((resolve, reject) => {
+    steem.broadcast.removeAccountAuth(params, (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(res);
+      }
+    });
+  });
+}
+
 const server = Hapi.server({
   port: 8899,
 });
@@ -77,6 +103,94 @@ server.route({
       })
       .catch((err) => {
         console.log(err);
+        return {
+          status: false,
+          msg: err.message,
+        };
+      });
+  },
+});
+
+server.route({
+  method: 'POST',
+  path: '/add_account_auth',
+  options: {
+    cors: true
+  },
+  handler: (request, h) => {
+    const payload = request.payload;
+    const username = payload.username;
+    const authorizedUsername = payload.authorized_username;
+    const signingKey = payload.active_key;
+    const role = 'posting';
+    const weight = 1;
+    if (!username || !authorizedUsername || !signingKey) {
+      return {
+        status: false,
+        msg: 'params_error',
+      };
+    }
+    return addAccountAuth({signingKey, username, authorizedUsername, role, weight})
+      .then((res) => {
+        if (res === []) {
+          return {
+            status: false,
+            msg: 'add_account_auth_failed',
+          };
+        }
+        return {
+          status: true,
+          msg: res,
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+        return {
+          status: false,
+          msg: err.message,
+        }
+      });
+  },
+});
+
+server.route({
+  method: 'POST',
+  path: '/remove_account_auth',
+  options: {
+    cors: true
+  },
+  handler: (request, h) => {
+    const payload = request.payload;
+    const username = payload.username;
+    const authorizedUsername = payload.authorized_username;
+    const signingKey = payload.active_key;
+    const role = 'posting';
+    const weight = 1;
+    if (!username || !authorizedUsername || !signingKey) {
+      return {
+        status: false,
+        msg: 'params_error',
+      };
+    }
+    return removeAccountAuth({signingKey, username, authorizedUsername, role, weight})
+      .then((res) => {
+        if (res === []) {
+          return {
+            status: false,
+            msg: 'remove_account_auth_failed',
+          };
+        }
+        return {
+          status: true,
+          msg: res,
+        };
+      })
+      .catch((err) => {
+        console.log(err);
+        return {
+          status: false,
+          msg: err.message,
+        }
       });
   },
 });
