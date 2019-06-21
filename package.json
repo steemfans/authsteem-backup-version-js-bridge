@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/ety001/authsteem-js-bridge/issues"
   },
-  "homepage": "https://github.com/ety001/authsteem-js-bridge#readme"
+  "homepage": "https://github.com/ety001/authsteem-js-bridge#readme",
+  "dependencies": {
+    "@hapi/hapi": "^18.3.1",
+    "steem": "^0.7.5"
+  }
 }
